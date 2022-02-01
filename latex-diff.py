@@ -37,7 +37,7 @@ def main():
     for f in files:
         shutil.copyfile(diff_file(f, r1, r2), f)
     subprocess.check_call('make')
-    shutil.copyfile('paper.pdf', diff_file('paper.pdf', r1, r2))
+    shutil.copyfile('main.pdf', diff_file('main.pdf', r1, r2))
 
     # clean up
     for f in files:
