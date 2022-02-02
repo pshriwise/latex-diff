@@ -17,7 +17,7 @@ def main(args):
         files = glob.glob('*.tex')
         for f in files:
             shutil.copyfile(f, '.' + f)
-        files = list(filter(lambda f: f not in args.i, files))
+        files = list(filter(lambda f: f not in args.ignore, files))
 
         # generate diffs
         cmd = "latexdiff-vc -t CFONT -r {} -r {}"
@@ -30,7 +30,8 @@ def main(args):
             shutil.copyfile(diff_file(f, r1, r2), f)
         subprocess.check_call('make')
         shutil.copyfile('main.pdf', diff_file('main.pdf', r1, r2))
-
+        if args.output:
+            shutil.move('main.pdf', args.output)
     finally:
         # always clean up
         for f in files:
@@ -48,9 +49,11 @@ if __name__ == '__main__':
     r1 = 'Starting commit/revision/tag.'
     parser.add_argument('r1', help=r1)
     r2 = 'Ending commit/revision/tag. Defaults to HEAD.'
-    parser.add_argument('--r2', help=r2, default='HEAD')
+    parser.add_argument('-r2', help=r2, default='HEAD')
     ignore = 'List of tex files to ignore'
-    parser.add_argument('--i', help=ignore, nargs='+', default=[])
+    parser.add_argument('-i','--ignore', help=ignore, nargs='+', default=[])
+    output = 'Name of the resulting PDF diff'
+    parser.add_argument('-o','--output', help=output, default='')
 
     args = parser.parse_args()
     main(args)
